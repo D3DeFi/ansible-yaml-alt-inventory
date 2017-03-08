@@ -1,0 +1,3 @@
+dev01.example.com:
+  groups: UK, proxy, apache-php
+  ansible_port: 8999

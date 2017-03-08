@@ -1,0 +1,21 @@
+lb01.example.com:
+  groups: US, monitored
+  backends:
+    - web01-cluster
+    - web02-cluster
+  ansible_user: ansib
+  ansible_port: 8999
+
+web[01:09].example.com:
+  groups: US, monitored, apache-php, web01-cluster
+  apache_max_clients: 512
+
+db01.example.com:
+  groups: US, monitored, web01-cluster, mysql
+
+web[11:19].example.com:
+  groups: UK, monitored, apache-php, web02-cluster
+  apache_max_clients: 512
+
+db02.example.com:
+  groups: UK, monitored, web02-cluster, mysql
