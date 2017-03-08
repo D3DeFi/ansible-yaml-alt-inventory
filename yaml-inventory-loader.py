@@ -47,7 +47,7 @@ def scan_inv_directory():
 def produce_json_object_list(invhosts):
     """Function parses Python dictionary object representing YAML data
     and produces valid JSON object for Ansible."""
-    inventory = {}
+    inventory = {'_meta': {'hostvars': {}}}
     for key, val in invhosts.iteritems():
         groups = val.get('groups', None).replace(' ', '').split(',')
         for group in groups:
@@ -55,6 +55,8 @@ def produce_json_object_list(invhosts):
                 inventory[group].append(key)
             else:
                 inventory[group] = [key]
+
+        inventory['_meta']['hostvars'][key] = val
 
     return json.dumps(inventory, indent=2)
 
