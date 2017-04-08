@@ -24,8 +24,7 @@ def scan_inv_directory():
             try:
                 hosts = yaml.safe_load(inventory)
             except yaml.scanner.ScannerError as e:
-                print('Inventory syntax error {}'.format(str(e.context_mark).lstrip()))
-                sys.exit(1)
+                raise Exception('Inventory syntax error {}'.format(str(e.context_mark).lstrip()))
 
         # If there are hosts defined with range indicator [1:3], expand them
         hosts_expanded = {}
@@ -39,8 +38,7 @@ def scan_inv_directory():
         invhosts.update(hosts_expanded)
 
     if not invhosts:
-        print('No hosts found.')
-        sys.exit(1)
+        raise Exception('No hosts found inside inventory directory.')
     return invhosts
 
 
@@ -49,14 +47,18 @@ def produce_json_object_list(invhosts):
     and produces valid JSON object for Ansible."""
     inventory = {'_meta': {'hostvars': {}}}
     for key, val in invhosts.iteritems():
-        groups = val.get('groups', None).replace(' ', '').split(',')
-        for group in groups:
-            if group in inventory.keys():
-                inventory[group].append(key)
-            else:
-                inventory[group] = [key]
+        groups = val.get('groups', None)
+        if groups:
+            groups = groups.replace(' ', '').split(',')
+            for group in groups:
+                if group in inventory.keys():
+                    inventory[group].append(key)
+                else:
+                    inventory[group] = [key]
 
-        inventory['_meta']['hostvars'][key] = val
+            inventory['_meta']['hostvars'][key] = val
+        else:
+            raise Exception('Unable to locate groups for {}. Maybe malformed or missing.'.format(key))
 
     return json.dumps(inventory, indent=2)
 
