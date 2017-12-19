@@ -9,7 +9,7 @@ try:
 except:
     import simplejson as json
 
-from ansible.inventory import expand_hosts as expand
+from ansible.plugins.inventory import detect_range, expand_hostname_range
 
 
 def scan_inv_directory():
@@ -28,12 +28,14 @@ def scan_inv_directory():
 
         # If there are hosts defined with range indicator [1:3], expand them
         hosts_expanded = {}
-        for key, val in hosts.iteritems():
-            if expand.detect_range(key):
-                key = expand.expand_hostname_range(key)
-                hosts_expanded.update({x:val for x in key})
-            else:
-                hosts_expanded[key] = val
+
+        if hosts:
+            for key, val in hosts.iteritems():
+                if detect_range(key):
+                    key = expand_hostname_range(key)
+                    hosts_expanded.update({x:val for x in key})
+                else:
+                    hosts_expanded[key] = val
 
         invhosts.update(hosts_expanded)
 
