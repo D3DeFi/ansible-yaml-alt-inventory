@@ -16,11 +16,12 @@ def scan_inv_directory():
     """Function scans inventory directory for all files ending with .yml
     and tries to parse them into Python dict object."""
     invhosts = {}
-    invfiles = os.listdir('inventory')
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    invfiles = os.listdir(script_dir)
 
     # Scan every yml file found inside inventory directory
     for invfile in [x for x in invfiles if x.endswith('.yml')]:
-        with open('inventory/{}'.format(invfile), 'r') as inventory:
+        with open('{}/{}'.format(script_dir, invfile), 'r') as inventory:
             try:
                 hosts = yaml.safe_load(inventory)
             except yaml.scanner.ScannerError as e:
