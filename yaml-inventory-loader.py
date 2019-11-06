@@ -31,7 +31,7 @@ def scan_inv_directory():
         hosts_expanded = {}
 
         if hosts:
-            for key, val in hosts.iteritems():
+            for key, val in hosts.items():
                 if detect_range(key):
                     key = expand_hostname_range(key)
                     hosts_expanded.update({x:val for x in key})
@@ -49,12 +49,12 @@ def produce_json_object_list(invhosts):
     """Function parses Python dictionary object representing YAML data
     and produces valid JSON object for Ansible."""
     inventory = {'_meta': {'hostvars': {}}}
-    for key, val in invhosts.iteritems():
+    for key, val in invhosts.items():
         groups = val.get('groups', None)
         if groups:
             groups = groups.replace(' ', '').split(',')
             for group in groups:
-                if group in inventory.keys():
+                if group in list(inventory.keys()):
                     inventory[group].append(key)
                 else:
                     inventory[group] = [key]
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.list:
-        print produce_json_object_list(scan_inv_directory())
+        print(produce_json_object_list(scan_inv_directory()))
 
     if args.host:
-        print produce_json_object_host(scan_inv_directory(), args.host)
+        print(produce_json_object_host(scan_inv_directory(), args.host))
